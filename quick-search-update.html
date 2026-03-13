@@ -1,0 +1,273 @@
+
+
+<div class="cs-wrapper" data-token="{{settings.storefront_api.token}}">
+  <form class="cs-form" action="/search.php" method="get" role="search">
+    <div class="cs-field">
+      <svg class="cs-icon-search" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input
+        class="cs-input"
+        name="search_query"
+        type="text"
+        placeholder="Search products..."
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Search products"
+        aria-autocomplete="list"
+        aria-controls="cs-dropdown"
+        aria-expanded="false"
+      />
+      <button class="cs-clear" type="button" aria-label="Clear search" hidden>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="cs-dropdown" id="cs-dropdown" role="listbox" aria-label="Search results"></div>
+  </form>
+</div>
+
+<style>
+.cs-wrapper *, .cs-wrapper *::before, .cs-wrapper *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+.cs-wrapper {
+  position: relative;
+  width: 100%;
+  font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+}
+.cs-input:focus {
+    border: none !important;
+    outline: none !important;
+}
+
+
+.cs-form { position: relative; width: 100%; }
+
+.cs-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #d2d2d2;
+    padding: 0 14px;
+    height: 48px;
+    transition: none;
+}
+.cs-field:focus-within {
+  border-color: #2d5a3d;
+  border-bottom-color: #2d5a3d;
+  box-shadow: 0 2px 0 #2d5a3d;
+}
+.cs-icon-search { color: #c0bbb5; flex-shrink: 0; transition: color 150ms ease; }
+.cs-field:focus-within .cs-icon-search { color: #2d5a3d; }
+.cs-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+  caret-color: #2d5a3d;
+  min-width: 0;
+}
+.cs-input::placeholder { color: #c0bbb5; font-weight: 300; }
+.cs-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #c0bbb5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 120ms ease;
+}
+.cs-clear:hover { color: #1a1a1a; }
+
+/* Dropdown */
+.cs-dropdown {
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 0; right: 0;
+  background: #ffffff;
+  border: 1px solid #e2ddd8;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  opacity: 0;
+  transform: translateY(-5px);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+  max-height: 520px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 9999;
+  scrollbar-width: thin;
+  scrollbar-color: #e2ddd8 transparent;
+}
+.cs-dropdown.cs-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* Label */
+.cs-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #2d5a3d;
+  padding: 13px 16px 7px;
+  border-bottom: 1px solid #f0ece7;
+  background: #fafaf9;
+  display: block;
+  text-decoration: none;
+}
+.cs-label-link {
+  cursor: pointer;
+  transition: background 100ms ease, color 100ms ease;
+}
+.cs-label-link:hover {
+  background: #f0ece7;
+  color: #1a4d2e;
+}
+
+/* Suggestions */
+.cs-sugg {
+  list-style: none;
+  padding: 4px 0;
+  border-bottom: 1px solid #f0ece7;
+}
+.cs-sugg-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #2a2a2a;
+  cursor: pointer;
+  transition: background 100ms ease;
+  user-select: none;
+}
+.cs-sugg-item:hover, .cs-sugg-item.cs-active { background: #f5f2ee; }
+.cs-sugg-item svg { color: #c0bbb5; flex-shrink: 0; }
+.cs-em { font-style: normal; color: #2d5a3d; font-weight: 600; }
+
+/* Cards */
+.cs-products { padding: 4px 0; }
+.cs-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+.cs-card:hover, .cs-card.cs-active { background: #f5f2ee; }
+.cs-thumb {
+  width: 48px; height: 60px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #f0ece7;
+}
+.cs-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 200ms ease;
+}
+.cs-card:hover .cs-thumb img { transform: scale(1.04); }
+.cs-thumb-ph {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, #ede9e3, #ddd8d0);
+  display: flex; align-items: center; justify-content: center;
+}
+.cs-thumb-ph svg { color: #c8c2b8; opacity: 0.6; }
+.cs-info { flex: 1; min-width: 0; }
+.cs-name {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.cs-sku { font-size: 10px; color: #b0aba5; margin-bottom: 4px; }
+.cs-price { font-size: 13px; font-weight: 500; color: #2d5a3d; }
+.cs-price-old { font-size: 11px; color: #b0aba5; text-decoration: line-through; margin-left: 5px; }
+.cs-arrow { color: #ddd8d2; flex-shrink: 0; transition: color 120ms ease, transform 120ms ease; }
+.cs-card:hover .cs-arrow { color: #2d5a3d; transform: translateX(3px); }
+
+/* Footer */
+.cs-footer {
+  border-top: 1px solid #f0ece7;
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fafaf9;
+}
+.cs-count { font-size: 10.5px; color: #b0aba5; }
+.cs-browse {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #2d5a3d;
+  text-decoration: none;
+  display: flex; align-items: center; gap: 5px;
+  transition: gap 120ms ease;
+}
+.cs-browse:hover { gap: 9px; }
+
+/* Empty */
+.cs-empty {
+  padding: 30px 16px;
+  text-align: center;
+  font-size: 12.5px;
+  color: #b0aba5;
+}
+
+/* Skeleton */
+.cs-skel-card { display: flex; align-items: center; gap: 12px; padding: 8px 16px; }
+.cs-skel {
+  background: linear-gradient(90deg, #f0ece7 25%, #e8e3dd 50%, #f0ece7 75%);
+  background-size: 200% 100%;
+  animation: cs-shimmer 1.4s ease-in-out infinite;
+  border-radius: 1px;
+}
+@keyframes cs-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.cs-skel-thumb { width: 48px; height: 60px; flex-shrink: 0; }
+.cs-skel-body  { flex: 1; }
+.cs-skel-l1 { height: 9px;  width: 70%; margin-bottom: 8px; }
+.cs-skel-l2 { height: 8px;  width: 38%; margin-bottom: 8px; }
+.cs-skel-l3 { height: 10px; width: 24%; }
+
+
+
+@media (min-width: 768px) {
+    .cs-wrapper {
+    position: relative;
+    width: 80% !important;
+    margin: 0 auto;
+}
+}
+
+</style>
+
